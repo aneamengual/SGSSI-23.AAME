@@ -103,7 +103,7 @@ def proof_mas_larga_un_min(contenido_original, tiempo_maximo=60):
 
     while time.time() - inicio_tiempo < tiempo_maximo:
         secuencia_hex = format(proof, '08x')
-        contenido_con_proof = f"{contenido_original}{secuencia_hex}\t9f\t100"
+        contenido_con_proof = f"{contenido_original}\n{secuencia_hex}\t9f\t100"
         resumen_sha256 = calc_sha256(contenido_con_proof)
 
         # Encuentra la longitud de la secuencia de 0s al principio del resumen
@@ -174,7 +174,7 @@ def archivos_queCumplen_y_masCeros(archivo_entrada, directorio):
                 if ceros > max_ceros:
                     max_ceros = ceros
                     archivo_max_ceros = ruta_archivo
-
+    print(max_ceros)
     return archivos_cumplen, archivo_max_ceros
 
 def archivos_queCumplen_sorteo(archivo_entrada, directorio):    
@@ -201,12 +201,13 @@ def archivos_queCumplen_sorteo(archivo_entrada, directorio):
     return archivo_elegido
                           
 
-archivo_entrada = 'SGSSI-23.CB.03.txt'
+archivo_entrada = 'SGSSI-23.CB.04.txt'
 archivo_salida = 'SGSSI-23.CB.04.9f.txt'
-directorio_archivos = 'SGSSI-23.S.6.2.CB.03.Candidatos'
+directorio_archivos = 'SGSSI-23.S.7.2.CB.04.Candidatos.Laboratorio'
 
-ganador = archivos_queCumplen_sorteo(archivo_entrada, directorio_archivos)
-#print("Archivo escogido: " + ganador)
+cumplen, ganador = archivos_queCumplen_y_masCeros(archivo_entrada, directorio_archivos)
+print("Archivo escogido: " + ganador + "\n")
+print(cumplen)
 
 #agregar_sha256_al_archivo("SGSSI-23.CB.03.txt", "comp_agregarsha.txt")
 #minar(archivo_entrada, archivo_salida)
