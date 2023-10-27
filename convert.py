@@ -94,17 +94,19 @@ def encontrar_proof(contenido_original):
         # Incrementa la proof para la siguiente iteración
         proof += 1
 
-def proof_mas_larga_un_min(contenido_original, tiempo_maximo=60):
+def proof_mas_larga_un_min(contenido_original, archivo_salida, tiempo_maximo=60):
     inicio_tiempo = time.time()
     proof = 0
     mejor_hash = ""
     mejor_longitud = 0
-    mejor_contenido = 0
+    mejor_salida = None
 
     while time.time() - inicio_tiempo < tiempo_maximo:
         secuencia_hex = format(proof, '08x')
-        contenido_con_proof = f"{contenido_original}\n{secuencia_hex}\t9f\t100"
-        resumen_sha256 = calc_sha256(contenido_con_proof)
+        with open(archivo_salida, 'w') as output_file:
+            output_file.write(f"{contenido_original}\n{secuencia_hex}\t9f\t100")
+        #contenido_con_proof = f"{contenido_original}\n{secuencia_hex}\t9f\t100"
+        resumen_sha256 = calcular_sha256(archivo_salida)
 
         # Encuentra la longitud de la secuencia de 0s al principio del resumen
         longitud_ceros = len(resumen_sha256) - len(resumen_sha256.lstrip('0'))
@@ -112,13 +114,13 @@ def proof_mas_larga_un_min(contenido_original, tiempo_maximo=60):
         if longitud_ceros > mejor_longitud:
             mejor_longitud = longitud_ceros
             mejor_hash = resumen_sha256
-            mejor_contenido = contenido_con_proof
+            mejor_salida = archivo_salida
 
         proof += 1
     
     print(mejor_hash)
 
-    return mejor_contenido
+    return mejor_salida
 
 def minar(archivo_entrada, archivo_salida):
     # Lee los contenidos del archivo de entrada
@@ -126,11 +128,7 @@ def minar(archivo_entrada, archivo_salida):
         contenido_original = input_file.read()
 
     # Encuentra una secuencia de proof
-    contenido_con_proof = proof_mas_larga_un_min(contenido_original)
-
-    # Escribe los contenidos en el archivo de salida
-    with open(archivo_salida, 'w') as output_file:
-        output_file.write(contenido_con_proof)
+    proof_mas_larga_un_min(contenido_original, archivo_salida)
 
 
 def comprobar_condiciones(archivo1, archivo2, ceros):   
