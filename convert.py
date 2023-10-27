@@ -138,17 +138,26 @@ def comprobar_condiciones(archivo1, archivo2, ceros):
         contenido1 = a1.read()
         contenido2 = a2.read()
     ult_fila = contenido2[-15:].split("\t")
-    if (contenido2.startswith(contenido1) and len(ult_fila)==3 and re.match(r'^[0-9a-f]{8}$', ult_fila[0]) and 
-        re.match(r'^[0-9a-f]{2}$', ult_fila[1]) and ult_fila[2].isdigit()):
-        hash_arch2 = calc_sha256(contenido2)
-        if hash_arch2.startswith("0"*ceros):
-            cond = True
+
+    if contenido2.startswith(contenido1):
+        lineas_contenido1 = contenido1.count('\n')  # Cuenta las líneas en contenido1
+        lineas_contenido2 = contenido2.count('\n')  # Cuenta las líneas en contenido2
+
+        # Verifica que contenido2 tiene una fila más que contenido1
+        if (lineas_contenido2 == lineas_contenido1 + 1 and len(ult_fila) == 3 and re.match(r'^[0-9a-f]{8}$', ult_fila[0]) and 
+            re.match(r'^[0-9a-f]{2}$', ult_fila[1]) and ult_fila[2].isdigit()):
+            hash_arch2 = calc_sha256(contenido2)
+            if hash_arch2.startswith("0" * ceros):
+                cond = True
+            else:
+                cond = False
         else:
             cond = False
     else:
         cond = False
 
     return cond
+
 
 
 
@@ -163,18 +172,17 @@ def archivos_queCumplen_y_masCeros(archivo_entrada, directorio):
     for root, _, files in os.walk(directorio):
         for archivo in files:
             ruta_archivo = os.path.join(root, archivo)
-            with open(ruta_archivo, 'r') as a2:
-                contenido2 = a2.read()
 
-                resumen_sha256 = calc_sha256(contenido2)
-                ceros = len(resumen_sha256) - len(resumen_sha256.lstrip('0'))
-                if comprobar_condiciones(archivo_entrada, ruta_archivo, ceros):
-                    archivos_cumplen.append(ruta_archivo)
+            resumen_sha256 = calcular_sha256(ruta_archivo)
+            ceros = len(resumen_sha256) - len(resumen_sha256.lstrip('0'))
+            if comprobar_condiciones(archivo_entrada, ruta_archivo, ceros):
+                archivos_cumplen.append(ruta_archivo)
+                print(ruta_archivo)
 
                 if ceros > max_ceros:
                     max_ceros = ceros
                     archivo_max_ceros = ruta_archivo
-    print(max_ceros)
+
     return archivos_cumplen, archivo_max_ceros
 
 def archivos_queCumplen_sorteo(archivo_entrada, directorio):    
@@ -186,14 +194,11 @@ def archivos_queCumplen_sorteo(archivo_entrada, directorio):
     for root, _, files in os.walk(directorio):
         for archivo in files:
             ruta_archivo = os.path.join(root, archivo)
-            with open(ruta_archivo, 'r') as a2:
-                contenido2 = a2.read()
-
-                resumen_sha256 = calc_sha256(contenido2)
-                ceros = len(resumen_sha256) - len(resumen_sha256.lstrip('0'))
-                if comprobar_condiciones(archivo_entrada, ruta_archivo, ceros):
-                    archivos_cumplen.append(ruta_archivo)
-                    archivos_ceros.append(ceros)
+            resumen_sha256 = calcular_sha256(ruta_archivo)
+            ceros = len(resumen_sha256) - len(resumen_sha256.lstrip('0'))
+            if comprobar_condiciones(archivo_entrada, ruta_archivo, ceros):
+                archivos_cumplen.append(ruta_archivo)
+                archivos_ceros.append(ceros)
 
     probabilidades = np.array(archivos_ceros) / sum(archivos_ceros)
     archivo_elegido= np.random.choice(archivos_cumplen, p=probabilidades)
@@ -205,8 +210,9 @@ archivo_entrada = 'SGSSI-23.CB.04.txt'
 archivo_salida = 'SGSSI-23.CB.04.9f.txt'
 directorio_archivos = 'SGSSI-23.S.7.2.CB.04.Candidatos.Laboratorio'
 
+
 cumplen, ganador = archivos_queCumplen_y_masCeros(archivo_entrada, directorio_archivos)
-print("Archivo escogido: " + ganador + "\n")
+print("Archivo escogido: " + ganador)
 print(cumplen)
 
 #agregar_sha256_al_archivo("SGSSI-23.CB.03.txt", "comp_agregarsha.txt")
