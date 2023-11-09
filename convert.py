@@ -94,17 +94,18 @@ def encontrar_proof(contenido_original):
         # Incrementa la proof para la siguiente iteración
         proof += 1
 
-def proof_mas_larga_un_min(contenido_original, archivo_salida, tiempo_maximo=60):
+'''
+def proof_mas_larga_un_min(contenido_original, archivo_salida, tiempo_maximo=240):
     inicio_tiempo = time.time()
     proof = 0
     mejor_hash = ""
     mejor_longitud = 0
-    mejor_salida = None
+    mejor_contenido = None
 
     while time.time() - inicio_tiempo < tiempo_maximo:
         secuencia_hex = format(proof, '08x')
         with open(archivo_salida, 'w') as output_file:
-            output_file.write(f"{contenido_original}{secuencia_hex}\t02a\t100")
+            output_file.write(f"{contenido_original}\n{secuencia_hex}\t02a\t100")
         #contenido_con_proof = f"{contenido_original}\n{secuencia_hex}\t9f\t100"
         resumen_sha256 = calcular_sha256(archivo_salida)
 
@@ -114,13 +115,41 @@ def proof_mas_larga_un_min(contenido_original, archivo_salida, tiempo_maximo=60)
         if longitud_ceros > mejor_longitud:
             mejor_longitud = longitud_ceros
             mejor_hash = resumen_sha256
-            mejor_salida = archivo_salida
+            mejor_contenido = f"{contenido_original}\n{secuencia_hex}\t02a\t100"
 
         proof += 1
-    
-    print(mejor_hash)
 
-    return mejor_salida
+    return mejor_contenido
+'''
+def proof_mas_larga_un_min(contenido_original, archivo_salida, tiempo_maximo=240):
+    inicio_tiempo = time.time()
+    proof = 0
+    mejor_hash = ""
+    mejor_longitud = 0
+    mejor_contenido = None
+
+    with open(archivo_salida, 'w') as output_file:
+        while time.time() - inicio_tiempo < tiempo_maximo:
+            secuencia_hex = format(proof, '08x')
+            output_file.seek(0)
+            output_file.write(f"{contenido_original}\n{secuencia_hex}\t02a\t100")
+            output_file.truncate()
+            
+            resumen_sha256 = calcular_sha256(archivo_salida)
+
+            longitud_ceros = len(resumen_sha256) - len(resumen_sha256.lstrip('0'))
+
+            if longitud_ceros > mejor_longitud:
+                mejor_longitud = longitud_ceros
+                mejor_hash = resumen_sha256
+                mejor_contenido = f"{contenido_original}\n{secuencia_hex}\t02a\t100"
+
+            proof += 1
+        output_file.seek(0)
+        output_file.write(mejor_contenido)
+        output_file.truncate()
+
+    return mejor_hash
 
 def minar(archivo_entrada, archivo_salida):
     # Lee los contenidos del archivo de entrada
@@ -204,8 +233,8 @@ def archivos_queCumplen_sorteo(archivo_entrada, directorio):
     return archivo_elegido
                           
 
-archivo_entrada = 'SGSSI-23.CB.05.txt'
-archivo_salida = 'SGSSI-23.CB.05.02a.txt'
+archivo_entrada = 'SGSSI-23.CB.06.txt'
+archivo_salida = 'SGSSI-23.CB.06.02a.txt'
 directorio_archivos = 'SGSSI-23.S.7.2.CB.04.Candidatos.Laboratorio'
 
 
@@ -214,8 +243,10 @@ directorio_archivos = 'SGSSI-23.S.7.2.CB.04.Candidatos.Laboratorio'
 #print(cumplen)
 
 #agregar_sha256_al_archivo("SGSSI-23.CB.03.txt", "comp_agregarsha.txt")
-minar(archivo_entrada, archivo_salida)
+hash = minar(archivo_entrada, archivo_salida)
+print(hash)
 #print(calc_sha256(archivo_salida))
 #print(comprobar_condiciones(archivo_entrada, archivo_salida, 7))
+print("\nEl hash del archivo SGSSI-23.CB.06.02a.txt es: " + calcular_sha256(archivo_salida))
 
 
