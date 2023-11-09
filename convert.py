@@ -164,7 +164,7 @@ def comprobar_condiciones(archivo1, archivo2, ceros):
     with open(archivo1, 'r') as a1, open(archivo2, 'r') as a2:
         contenido1 = a1.read()
         contenido2 = a2.read()
-    ult_fila = contenido2[-15:].split("\t")
+    ult_fila = contenido2[-16:].split("\t")
 
     if contenido2.startswith(contenido1):
         lineas_contenido1 = contenido1.count('\n')  # Cuenta las líneas en contenido1
@@ -172,8 +172,8 @@ def comprobar_condiciones(archivo1, archivo2, ceros):
 
         # Verifica que contenido2 tiene una fila más que contenido1
         if (lineas_contenido2 == lineas_contenido1 + 1 and len(ult_fila) == 3 and re.match(r'^[0-9a-f]{8}$', ult_fila[0]) and 
-            re.match(r'^[0-9a-f]{2}$', ult_fila[1]) and ult_fila[2].isdigit()):
-            hash_arch2 = calc_sha256(contenido2)
+            re.match(r'^[0-9a-f]{3}$', ult_fila[1]) and ult_fila[2].isdigit()):
+            hash_arch2 = calcular_sha256(archivo2)
             if hash_arch2.startswith("0" * ceros):
                 cond = True
             else:
@@ -243,10 +243,10 @@ directorio_archivos = 'SGSSI-23.S.7.2.CB.04.Candidatos.Laboratorio'
 #print(cumplen)
 
 #agregar_sha256_al_archivo("SGSSI-23.CB.03.txt", "comp_agregarsha.txt")
-hash = minar(archivo_entrada, archivo_salida)
-print(hash)
-#print(calc_sha256(archivo_salida))
-#print(comprobar_condiciones(archivo_entrada, archivo_salida, 7))
-print("\nEl hash del archivo SGSSI-23.CB.06.02a.txt es: " + calcular_sha256(archivo_salida))
+#hash = minar(archivo_entrada, archivo_salida)
+#print(hash)
+print("\nEl archivo tiene el formato correcto? ")
+print(comprobar_condiciones(archivo_entrada, archivo_salida, 5))
+#print("\nEl hash del archivo SGSSI-23.CB.06.02a.txt es: " + calcular_sha256(archivo_salida))
 
 
