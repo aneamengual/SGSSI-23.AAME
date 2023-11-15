@@ -245,8 +245,8 @@ directorio_archivos = 'SGSSI-23.S.7.2.CB.04.Candidatos.Laboratorio'
 #agregar_sha256_al_archivo("SGSSI-23.CB.03.txt", "comp_agregarsha.txt")
 #hash = minar(archivo_entrada, archivo_salida)
 #print(hash)
-print("\nEl archivo tiene el formato correcto? ")
-print(comprobar_condiciones(archivo_entrada, archivo_salida, 5))
-#print("\nEl hash del archivo SGSSI-23.CB.06.02a.txt es: " + calcular_sha256(archivo_salida))
+#print("\nEl archivo tiene el formato correcto? ")
+#print(comprobar_condiciones(archivo_entrada, archivo_salida, 5))
+print("\nEl hash del archivo SGSSI-23.CB.06.02a.txt es: " + calcular_sha256(archivo_salida))
 
 
