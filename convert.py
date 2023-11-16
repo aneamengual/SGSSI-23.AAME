@@ -126,14 +126,15 @@ def proof_mas_larga_un_min(contenido_original, archivo_salida, tiempo_maximo=240
     proof = 0
     mejor_hash = ""
     mejor_longitud = 0
-    mejor_contenido = None
+    mejor_secuencia = None
 
     with open(archivo_salida, 'w') as output_file:
+        output_file.write(f"{contenido_original}\n")
         while time.time() - inicio_tiempo < tiempo_maximo:
             secuencia_hex = format(proof, '08x')
-            output_file.seek(0)
-            output_file.write(f"{contenido_original}\n{secuencia_hex}\t02a\t100")
-            output_file.truncate()
+            output_file.seek(len(contenido_original) + 1)
+            output_file.write(f"{secuencia_hex}\t02a\t100")
+            output_file.truncate() #Todos los datos después de la pos actual se eliminan
             
             resumen_sha256 = calcular_sha256(archivo_salida)
 
@@ -142,11 +143,11 @@ def proof_mas_larga_un_min(contenido_original, archivo_salida, tiempo_maximo=240
             if longitud_ceros > mejor_longitud:
                 mejor_longitud = longitud_ceros
                 mejor_hash = resumen_sha256
-                mejor_contenido = f"{contenido_original}\n{secuencia_hex}\t02a\t100"
+                mejor_secuencia = f"{secuencia_hex}\t02a\t100"
 
             proof += 1
-        output_file.seek(0)
-        output_file.write(mejor_contenido)
+        output_file.seek(len(contenido_original) + 1)
+        output_file.write(mejor_secuencia)
         output_file.truncate()
 
     return mejor_hash
